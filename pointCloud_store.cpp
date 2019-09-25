@@ -8,7 +8,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
-//#include <opencv2/imgcodecs/imgcodecs.hpp>
 #include<iostream>
 #include "stb_image_write.h"
 #include<pcl/point_types.h>
@@ -143,7 +142,6 @@ int main(int argc, char * argv[]) try
     // Construct an object to manage view state
     // Construct an object to manage view state
 
-
     rs2::pointcloud pc;
     // We want the points object to be persistent so we can display the last cloud when a frame drops
     rs2::points points;
@@ -177,7 +175,6 @@ int main(int argc, char * argv[]) try
     auto list = ctx.query_devices();
     rs2::device dev = list.front();
     set_depth_clamp(dev);
-    //-----------------------------------------------------------------------------------------------------------------------------------
 
     //variable to iterate through rgb_frame and depth_frame sequences
     int i=0;
