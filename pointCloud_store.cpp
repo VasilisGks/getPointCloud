@@ -126,7 +126,6 @@ class FilterAndPublish
             vox.filter(*cloud_filtered);
             
             return cloud_filtered;
-            //pub.publish (cloud_filtered);
         }
 
     private:
@@ -134,7 +133,6 @@ class FilterAndPublish
 
 };
 //-----------------------------------------------------------------------------------------------------------------------------------
-//Main program
 // Get depth and color video streams & export to ply and png formats respectively
 int main(int argc, char * argv[]) try
 {
@@ -178,7 +176,6 @@ int main(int argc, char * argv[]) try
     rs2::context ctx;
     auto list = ctx.query_devices();
     rs2::device dev = list.front();
-    //calling advance mode
     set_depth_clamp(dev);
     //-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -195,12 +192,7 @@ int main(int argc, char * argv[]) try
     const string pcd =  "/home/user/Documents/cloud_";
     const string cl1 = ".pcd";
     const string cl2 = ".ply";
-    //-----------------------------------------------------------------------------------------------------------------------------------
-    //Get intrinsics
-    //auto profile = pipe.start(cfg);
-    //auto stream = profile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
-    //auto intrinsics = stream.get_intrinsics(); // Calibration data
-    
+
     while (app) // Application still alive?
     {
         // Capture 20 frames to give autoexposure, etc. a chance to settle
@@ -216,9 +208,6 @@ int main(int argc, char * argv[]) try
         rs2::points points_spat, points_both;
         //points_spat - filtered with spatial filter, points_both - filtered with spatial&temporal filters
         
-        //apply filters to depth
-        // Decimation will reduce the resultion of the depth image,
-        // closing small holes and speeding-up the algorithm
         tie(points_spat, points_both) = apply_filters(depth, dec, pc);
 
         points = pc.calculate(depth);
@@ -229,9 +218,6 @@ int main(int argc, char * argv[]) try
             color = frames.get_infrared_frame();
                 // Tell pointcloud object to map to this color frame
         pc.map_to(color);
-
-        // Draw the pointcloud
-        //draw_pointcloud(app.width(), app.height(), app_state, points);
 
         i+=1;
         if (i<10){
@@ -252,23 +238,16 @@ int main(int argc, char * argv[]) try
          stbi_write_png(s2.c_str(), rgb_frame.get_width(), rgb_frame.get_height(),
                rgb_frame.get_bytes_per_pixel(), rgb_frame.get_data(), rgb_frame.get_stride_in_bytes());
          
-
          //Convert points to pcl
          auto pcl_points = points_to_pcl(points_spat);
          auto raw_points = points_to_pcl(points);
-         //Voxel filter
-         //FilterAndPublish obj = FilterAndPublish();
-         //auto filtered_cloud = obj.callback(pcl_points);
-         //pcl::io::savePLYFile (filename, *filtered_cloud);
-          
+         
+         auto filtered_cloud = obj.callback(pcl_points);
+         pcl::io::savePLYFile (filename, *filtered_cloud);
+            
          //Once in pcl -> export to organized PC (pcd)
-         //pcl::io::savePCDFileASCII(cl2_ply.c_str(), * pcl_points); 
          pcl::io::savePCDFileASCII(cl2_ply.c_str(), * raw_points); 
-         //stbi_write_png("/home/aldoum/Documents/a.png", rgb_frame.get_width(), rgb_frame.get_height(),
-           //    rgb_frame.get_bytes_per_pixel(), rgb_frame.get_data(), rgb_frame.get_stride_in_bytes());
-         //Processing via OpenCV
-         //cv::Mat dMat_colored = cv::Mat(cv::Size(1920, 1080), CV_8UC3, (void*)rgb_frame.get_data());
-         //cv::imwrite( "/home/aldoum/Documents/coloredC3.png", dMat_colored);
+
     }
 
     return EXIT_SUCCESS;
