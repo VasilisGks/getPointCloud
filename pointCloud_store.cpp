@@ -49,7 +49,6 @@ std::tuple<rs2_ptr, rs2_ptr>   apply_filters(rs2::frame& depth, rs2::decimation_
         auto depth_both_f = temp.process(depth2);
         // If we are in disparity domain, switch back to depth
         //depth = disparity2depth.process(depth);
-        //end of applying filters
         auto points_spat = pc.calculate(depth2);
         // Generate the pointcloud and texture mappings
         auto points_both = pc.calculate(depth_both_f);
